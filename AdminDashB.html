@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Well</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      padding-top: 70px;
+      background-color: #f8f9fa;
+    }
+
+    .navbar {
+      background-color: #343a40;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+    }
+
+    .container {
+      background-color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .card {
+      margin-bottom: 20px;
+      border: 1px solid #e2e2e2;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      position: relative;
+    }
+
+    .card-body p {
+      margin-bottom: 10px;
+    }
+
+    .text-muted {
+      font-size: 0.8rem;
+    }
+
+    .btn-link {
+      color: #007bff;
+    }
+
+    .replies {
+      margin-top: 10px;
+    }
+
+    .replies p {
+      margin-bottom: 5px;
+      font-style: italic;
+      color: #6c757d;
+    }
+
+    .reply-input {
+      margin-top: 10px;
+    }
+
+    /* Add your preferred styles for the modal here */
+
+
+/* Add more styles as needed */
+
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Deep Well</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-toggle="modal" data-target="#addEntryModal">Want to Share Something?  </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="logout()">Logout</a>
+        </li>
+     
+    </ul>
+</div>
+</nav>
+
+<div class="container">
+<div id="diary-entries"></div>
+</div>
+
+<div class="modal" tabindex="-1" id="logoutConfirmationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Logout Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to log out?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmLogout">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+  
+
+<!-- Add Entry Modal -->
+<div class="modal" id="addEntryModal" tabindex="-1" role="dialog" aria-labelledby="addEntryModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="addEntryModalLabel">anything you want to say</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="diaryForm">
+        <div class="form-group">
+          <label for="entryText">Thoughts? Feeling? Wisdom? Anthing ! </label>
+          <textarea class="form-control" id="entryText" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post</button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+   $(document).ready(function () {
+      loadEntries();
+
+      $("#diaryForm").submit(function (event) {
+        event.preventDefault();
+        var entryText = $("#entryText").val();
+        var entryDate = new Date().toLocaleString();
+
+        var entryHTML = createEntryHTML(entryText, entryDate);
+        $("#diary-entries").append(entryHTML);
+
+        saveEntry(entryText, entryDate);
+
+        $("#entryText").val("");
+        $("#addEntryModal").modal("hide");
+      });
+    });
+
+    function createEntryHTML(entryText, entryDate) {
+      return '<div class="card">' +
+        '<div class="card-body">' +
+        '<p>' + entryText + '</p>' +
+        '<p class="text-muted">' + formatDateTime(entryDate) + '</p>' +
+        '<div class="btn-group" role="group">' +
+        '<button type="button" class="btn btn-link" onclick="editEntry(this)">Edit</button>' +
+        '<button type="button" class="btn btn-link" onclick="deleteEntry(this)">Delete</button>' +
+        '</div>' +
+        '<div class="replies"></div>' +
+        '<div class="reply-input">' +
+        '<textarea class="form-control" rows="2" placeholder="Write a reply"></textarea>' +
+        '<button type="button" class="btn btn-primary btn-sm" onclick="addReply(this)">Reply</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    }
+
+    function formatDateTime(dateString) {
+      var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+    
+    function addReply(element) {
+      var card = $(element).closest('.card');
+      var replyText = card.find('.reply-input textarea').val();
+      var replyDate = new Date().toLocaleString();
+
+      if (replyText.trim() !== "") {
+        var replyHTML = '<p><strong>' + replyText + '</strong></p>' +
+          '<p class="text-muted">' + formatDateTime(replyDate) + '</p>';
+        card.find('.replies').append(replyHTML);
+        saveReply(card.find('p:first').text(), replyText, replyDate);
+      }
+    }
+
+    function saveReply(entryText, replyText, replyDate) {
+      var entries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].text === entryText) {
+          entries[i].replies = entries[i].replies || [];
+          entries[i].replies.push({ text: replyText, date: replyDate });
+          break;
+        }
+      }
+
+      localStorage.setItem('diaryEntries', JSON.stringify(entries));
+    }
+    
+    function loadReplies(entryText, repliesContainer) {
+    var entries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+
+    for (var i = 0; i < entries.length; i++) {
+        if (entries[i].text === entryText && entries[i].replies) {
+            for (var j = 0; j < entries[i].replies.length; j++) {
+                var replyHTML = '<p><strong>' + entries[i].replies[j].text + '</strong></p>' +
+                                '<p class="text-muted">' + formatDateTime(entries[i].replies[j].date) + '</p>';
+                repliesContainer.append(replyHTML);
+            }
+            break;
+        }
+    }
+}
+    
+    function editEntry(element) {
+        var card = $(element).closest('.card');
+        var entryText = card.find('p:first').text();
+    
+        var editedText = prompt("Edit Entry:", entryText);
+        if (editedText !== null) {
+            card.find('p:first').text(editedText);
+            updateEntry(entryText, editedText);
+        }
+    }
+    
+    function deleteEntry(element) {
+        var card = $(element).closest('.card');
+        var entryText = card.find('p:first').text();
+    
+        card.remove();
+        removeEntry(entryText);
+    }
+    
+    function loadEntries() {
+        var entries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+    
+        // Filter out undefined entries
+        entries = entries.filter(function (entry) {
+            return entry.text !== undefined && entry.date !== undefined;
+        });
+    
+        for (var i = 0; i < entries.length; i++) {
+            var entryHTML = createEntryHTML(entries[i].text, entries[i].date);
+            var card = $(entryHTML);
+            $("#diary-entries").append(card);
+    
+            var repliesContainer = card.find('.replies');
+            loadReplies(entries[i].text, repliesContainer);
+        }
+    }
+    
+    function saveEntry(text, date) {
+        var entries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+        entries.push({ text: text, date: date });
+        localStorage.setItem('diaryEntries', JSON.stringify(entries));
+    }
+    
+    function updateEntry(oldText, newText) {
+        var entries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i].text === oldText) {
+                entries[i].text = newText;
+                break;
+            }
+        }
+        localStorage.setItem('diaryEntries', JSON.stringify(entries));
+    }
+    
+    function removeEntry(text) {
+        var entries = JSON.parse(localStorage.getItem('diaryEntries')) || [];
+        entries = entries.filter(function (entry) {
+            return entry.text !== text;
+        });
+        localStorage.setItem('diaryEntries', JSON.stringify(entries));
+    }
+
+    // Function to handle logout
+    function logout() {
+        // Show the logout confirmation modal
+        $("#logoutConfirmationModal").modal("show");
+
+        // Handle confirmation click
+        $("#confirmLogout").click(function () {
+            // Implement your logout logic here
+            window.location.href = "index.html";
+            $("#logoutConfirmationModal").modal("hide");
+        });
+
+        // Handle modal close without confirmation
+        $("#closeModal").click(function () {
+            // Reset modal state if the user closes without confirming
+            $("#logoutConfirmationModal").modal("hide");
+        });
+    }
+    
+    </script>
+    
+    <footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+          <p>&copy; 2023 Pilosopong Injinir. All Rights Reserved.</p>
+          <!-- Add links to your social media profiles -->
+        </div>
+      </footer>
+
+</body>
+
+</html>

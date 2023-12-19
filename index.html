@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Well Welcome Page</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .dashboard-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+   
+ <!-- Bootstrap Modal for Important Reminders and Greetings -->
+ <div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel"
+ aria-hidden="true">
+ <div class="modal-dialog" role="document">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title" id="welcomeModalLabel">Greetings of Peace!</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+             </button>
+         </div>
+         <div class="modal-body">
+             <p>
+                Welcome to Deep Well! I created this application to provide a space where everyone can feel free to share their thoughts and lighten their burdens. Encouraging everyone to deep well, where we can engage in open interactions with respect and wisdom. Here, everyone is invited to share their perspectives in their own mirror, so let's keep an open mind. Let's enjoy and love! Thousands of thanks!</p>
+         </div>
+         <div class="modal-footer">
+             <button type="button" class="btn btn-primary" data-dismiss="modal">Copy that!</button>
+         </div>
+     </div>
+ </div>
+</div>
+
+<!-- Login Page -->
+<div class="container login-container">
+    <div>
+        <h1 style="  color: rgb(13, 104, 153);"> Hey You Are!</h1>
+        <h1 style=" padding-left: 10%; color: rgb(13, 104, 153);"  > Welcome!</h1>
+        <hr>
+    </div>
+
+    <h2 class="text-center mb-4">Login Admin</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    <br/>
+    <h2 class="text-center mb-4">if not Admin — </h2>
+    
+    <form id="want-to-share">
+        <div class="form-group">
+            <label for="username">Want to Share Something?</label>
+            
+        </div>
+        
+        <button type="click-here" class="btn btn-primary btn-block" style="background-color: rgb(8, 173, 8);">Click Here!</button>
+    </form>
+    
+</div>
+
+<!-- Dashboard Page -->
+<div class="container dashboard-container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Your Business</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard content goes here -->
+    <div class="container mt-4">
+        <h2>Welcome to Your Business Dashboard!</h2>
+        <!-- Add your dashboard content here -->
+    </div>
+</div>
+
+<!-- Bootstrap Modal for Alert -->
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="alertModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap JS and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Your custom JavaScript -->
+<script>
+    // Show the welcome modal when the page is ready
+    $(document).ready(function () {
+        $('#welcomeModal').modal('show');
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Perform authentication (you can replace this with your logic)
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // For simplicity, using a hardcoded check
+        if (username === "1" && password === "1") {
+            // Redirect to AdminDashB.html
+            window.location.href = "AdminDashB.html";
+        } else {
+            // Show the alert modal with an error message
+            document.getElementById("alertModalBody").innerText = "Invalid username or password. Please try again.";
+            $('#alertModal').modal('show');
+        }
+    });
+
+    // Add this function to handle the click event for the "Click Here!" button
+    document.getElementById("want-to-share").addEventListener("submit", function (event) {
+        event.preventDefault();
+        // Redirect to PublicDashB.html
+        window.location.href = "PublicDashB.html";
+    });
+
+    function logout() {
+        // Perform logout logic here
+        // For simplicity, just toggle visibility of login and dashboard containers
+        document.querySelector('.login-container').style.display = 'block';
+        document.querySelector('.dashboard-container').style.display = 'none';
+    }
+</script>
+
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+      <p>&copy; 2023 Pilosopong Injinir. All Rights Reserved.</p>
+      <!-- Add links to your social media profiles -->
+    </div>
+  </footer>
+
+</body>
+</html>
